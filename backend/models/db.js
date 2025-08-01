@@ -1,5 +1,6 @@
 import pg from "pg";
 import env from "dotenv";
+
 env.config();
 
 const requiredEnvVars = [
@@ -17,7 +18,8 @@ requiredEnvVars.forEach((varName) => {
   }
 });
 
-const db = new pg.Pool({
+// Create a new pool instance for database connections
+const pool = new pg.Pool({
   user: process.env.PG_USER,
   host: process.env.PG_HOST,
   database: process.env.PG_DATABASE,
@@ -25,16 +27,32 @@ const db = new pg.Pool({
   port: process.env.PG_PORT,
 });
 
-db.connect()
-  .then(() => console.log("connected with the database"))
-  .catch(err => {
-    console.log("Couldn't connect with the database ", err);
-    process.exit(1);
-  });
+// Function to connect to the database
+const connectDB = async () => {
+  try {
+    await pool.connect();  // Attempt to connect to the database
+    console.log("Connected to the database");
+  } catch (error) {
+    console.error("Database connection failed", error);
+    process.exit(1);  // Exit if connection fails
+  }
+};
 
-db.on("error", (err) => {
-  console.log("Database error: ", err);
+// Error handling for the database pool
+pool.on("error", (err) => {
+  console.error("Database error: ", err);
   process.exit(1);
 });
 
-export const query = (text, params) => db.query(text, params);
+// Simplified query function with error handling
+export const query = async (text, params) => {
+  try {
+    return await pool.query(text, params);  // Execute the query
+  } catch (error) {
+    console.error("Error executing query", { text, params, error });
+    throw error;  // Rethrow the error for higher-level handling
+  }
+};
+
+// Export the connection function and query function
+export { connectDB };
