@@ -9,7 +9,7 @@ export const shorthands = undefined;
  * @returns {Promise<void> | void}
  */
 export const up = (pgm) => {
-  pgm.sql(`--
+    pgm.sql(`--
 -- PostgreSQL database dump
 --
 
