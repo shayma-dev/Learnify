@@ -1,9 +1,10 @@
+// src/utils/ProtectedRoute.jsx
 import { Outlet, Navigate } from "react-router-dom";
-import { UserProvider, useUser } from "../context/UserContext.jsx";
+import { useAuth } from "../context/AuthContext"; // Ensure the path is correct
 
-const ProtectedRoutes = () => {
-    const { user } = useUser(); // Check if user is authenticated
-    return user ? <Outlet /> : <Navigate to="/login" />; // Redirect to login if not authenticated
-}
+const ProtectedRoute = () => {
+    const { user } = useAuth(); // Check if user is authenticated
+    return user ? <Outlet /> : <Navigate to="/" />; // Redirect to login if not authenticated
+};
 
-export default ProtectedRoutes;
+export default ProtectedRoute;

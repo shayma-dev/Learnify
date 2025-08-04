@@ -1,21 +1,23 @@
-import React from "react";
-import { useUser } from "../context/UserContext"; // Adjust path as necessary
+// src/pages/ProfilePage.jsx
+import React from 'react';
+import { useAuth } from '../context/AuthContext';
+import { Navigate } from 'react-router-dom';
 
 const Profile = () => {
-    const { user } = useUser(); // Get the user from context
+    const { user, logout } = useAuth();
+
+    // Redirect to landing page if user is not logged in
+    if (!user) {
+        return <Navigate to="/" />;
+    }
 
     return (
         <div>
-            <h2>Profile Page</h2>
-            {user ? (
-                <div>
-                    <h3>Welcome, {user.username}</h3>
-                    <p>Email: {user.email}</p>
-                    {/* Add other details you want to show */}
-                </div>
-            ) : (
-                <p>No user data available.</p>
-            )}
+            <h1>Profile</h1>
+            <div>
+                <h2>Welcome, {user.username}</h2>
+                <button onClick={logout}>Logout</button>
+            </div>
         </div>
     );
 };

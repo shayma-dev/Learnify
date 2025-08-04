@@ -1,20 +1,23 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
 import LandingPage from "./pages/LandingPage";
 import Profile from "./pages/Profile";
-import ProtectedRoutes from "./utils/ProtectedRoute";
+import ProtectedRoute from "./utils/ProtectedRoute";
 
 const App = () => {
   return (
     <>
-      <Routes>
-        <Route path="/login" element={<LandingPage />} />
-        <Route element={<ProtectedRoutes />}>
-          <Route path="/" element={<Profile />} />
-          <Route path="/profile" element={<Profile />} />
-          {/* You can nest more protected routes here */}
-        </Route>
-      </Routes>
+      <AuthProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/profile" element={<Profile />} />
+            </Route>
+          </Routes>
+        </Router>
+      </AuthProvider>
     </>
   );
 };
