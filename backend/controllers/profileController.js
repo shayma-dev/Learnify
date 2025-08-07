@@ -19,7 +19,7 @@ export const updateUsername = async (req, res) => {
   if (username.length < 3 || username.length > 50) {
     return res.status(400).json({ error: "Username must be between 3 and 50 characters long" });
   }
-   const existingUsername = await query("SELECT * FROM users WHERE username = $1", [username]);
+   const existingUsername = await query("SELECT * FROM users WHERE LOWER(username) = LOWER($1)", [username]);
     if (existingUsername.rows.length > 0) {
       return res.status(400).json({ error: "Username already taken" });
     }
@@ -38,17 +38,14 @@ export const updateAvatar = async (req, res) => {
   try {
     const filePath = req.file.path;
 
-    // 1. رفع الصورة إلى Cloudinary
     const result = await cloudinary.uploader.upload(filePath, {
       folder: "avatars",
-      public_id: `user_${req.user.id}`, // اسم مخصص
+      public_id: `user_${req.user.id}`, 
       overwrite: true,
     });
 
-    // 2. حذف الصورة من المجلد المحلي
     fs.unlinkSync(filePath);
 
-    // 3. تحديث رابط الصورة في قاعدة البيانات
     await query("UPDATE users SET avatar_url = $1 WHERE id = $2", [result.secure_url, req.user.id]);
 
     res.status(200).json({ message: "Avatar updated successfully", avatarUrl: result.secure_url });
@@ -60,7 +57,7 @@ export const updateAvatar = async (req, res) => {
 
 export const addSubject = async (req, res) => {
   const { name } = req.body;
-  const existingSubject = await query("SELECT * FROM subjects WHERE user_id = $1 AND name =$2", [req.user.id , name]);
+  const existingSubject = await query("SELECT * FROM subjects WHERE user_id = $1 AND LOWER(name) = LOWER($2)", [req.user.id , name]);
     if (existingSubject.rows.length > 0) {
       return res.status(400).json({ error: "Subject already added" });
     }
@@ -73,9 +70,9 @@ export const addSubject = async (req, res) => {
   }
 };
 
-export const deleteSubject = async (req, res) => {
+ export const deleteSubject = async (req, res) => {
   const subjectId = req.params.id;
-// check the case 
+
   try {
     const existingSubject = await query("SELECT * FROM subjects WHERE user_id = $1 AND id =$2", [req.user.id , subjectId]);
     if (existingSubject.rows.length === 0) {
@@ -87,4 +84,11 @@ export const deleteSubject = async (req, res) => {
     console.error(err);
     res.status(500).json({ error: "Error deleting subject" });
   }
+};
+
+export const logout = (req, res) => {
+  req.logout((err) => {
+    if (err) return res.status(500).json({ error: "Logout error" });
+    res.status(200).json({ message: "Logged out" });
+  });
 };

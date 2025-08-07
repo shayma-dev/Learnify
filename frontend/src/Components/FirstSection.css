@@ -1,0 +1,151 @@
+
+.first-section{
+  background-image: url('../assets/Interface.png');
+  width: 100%; /* العرض الكامل */
+  height: 115vh; /* الارتفاع الكامل */
+  background-size: cover; /* تغطي الصورة المساحة بالكامل */
+  background-position: center; /* مركز الصورة */
+  overflow: hidden; 
+
+}
+.first-section h1,
+.first-section h6,
+.first-section .getstart {
+  opacity: 0; /* بداية النصوص تكون غير مرئية */
+  animation-duration: 2s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+}
+
+.first-section h1 {
+  animation-name: fadeInUp;
+  font-size: 100px;
+  width: 700px;
+  font-weight: bold;
+  color: #0a1653; /* اللون الداكن */
+  margin:  0px 150px -1px 480px;
+  text-shadow: 15px 5px 20px rgb(171, 196, 214);
+}
+
+.first-section h6 {
+   animation-name: fadeInUp; /* نفس الحركة */
+  animation-delay: 0.5s;
+  font-size: 23px;
+  color: black; /* اللون الفاتح للنص */
+  margin:  15px 150px -1px 500px;
+
+}
+
+.first-section img {
+  width: 60px;
+  height: 60px;
+  margin:  90px 150px 10px 750px;
+  border-radius: 10px;
+}
+.first-section img:hover {
+box-shadow: 0px 10px 15px rgb(34, 45, 53);
+transform: translateY(-5px);
+
+}
+.getstart {
+  animation-name: fadeInUp; /* نفس الحركة */
+  animation-delay: 1s;
+  background-color: #72a1fd !important;  
+  color: #fdfdfd !important;  
+  width:200px;
+  height: 50px;
+  font-size: 21px !important;  
+  font-weight: 500;
+  border:  none !important;  
+  transition: background-color 0.3s ease !important;
+  margin:  40px 150px -1px 690px;
+  box-shadow: 5px 5px 20px #afb4cf;
+
+}
+
+.getstart:hover {
+    background-color: #4f60b8f4 !important; 
+    color: #ffffff !important; 
+}
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px); 
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0); 
+  }
+}
+@media (max-width: 768px) {
+  .first-section {
+    height: 100vh; /* ضبط ارتفاع الصورة في الشاشات الصغيرة */
+    background-image: url('../assets/responsivebackground_edit.png');
+    width: 100%; /* العرض الكامل */
+    height: 200vh; /* الارتفاع الكامل */
+    background-size: cover; /* تغطي الصورة المساحة بالكامل */
+    background-position: center; /* مركز الصورة */
+    overflow: hidden; 
+  }
+
+  .first-section h1 {
+    font-size: 65px; 
+    width: 400px;
+    margin: 430px 20px 10px ;
+    padding: 0;
+  }
+
+  .first-section h6 {
+ display: none;
+  }
+
+  .first-section img {
+    display: none;
+  }
+  .getstart {
+    width: 180px; 
+    height: 45px;
+    font-size: 18px; /* تقليل حجم الخط في الزر */
+    margin: 40px 40px;
+  }
+
+  .getstart:hover {
+    background-color: #4f60b8f4 !important;
+    color: #ffffff !important;
+  }
+}
+
+/* تخصيص التصميم لشاشات أصغر (مثل الهواتف) */
+@media (max-width: 480px) {
+  .first-section{
+    height: 100vh; /* ضبط ارتفاع الصورة في الشاشات الصغيرة */
+    background-image: url('../assets/responsivebackgroundmobile.png');
+    width: 100%; /* العرض الكامل */
+    background-size: cover; /* تغطي الصورة المساحة بالكامل */
+    background-position: center; /* مركز الصورة */
+    overflow: hidden; 
+  }
+
+  .first-section h1 {
+    font-size: 50px;
+    text-align: center;
+    width: 300px;
+    margin-top: 320px;
+    margin-left: 50px;
+
+  }
+
+  .first-section h6 {
+  display: none;  }
+
+  .first-section img {
+  display: none; 
+  }
+
+  .getstart {
+    width: 160px; /* تقليل عرض الزر في الشاشات الصغيرة */
+    font-size: 16px;
+    margin-top: 20px;
+    margin-left: 100px;    
+  }
+}

@@ -6,9 +6,10 @@ import upload from "../middlewares/upload.js";
 const router = express.Router();
 
 router.get("/", isAuthenticated, profileController.getProfile);
-router.post("/update", isAuthenticated, profileController.updateUsername);
-router.post("/avatar", isAuthenticated, upload.single("avatar"), profileController.updateAvatar);
+router.patch("/update", isAuthenticated, profileController.updateUsername);
+router.patch("/avatar", isAuthenticated, upload.single("avatar"), profileController.updateAvatar);
 router.post("/subjects/add", isAuthenticated, profileController.addSubject);
-router.post("/subjects/delete/:id", isAuthenticated, profileController.deleteSubject);
+router.delete("/subjects/delete/:id", isAuthenticated, profileController.deleteSubject);
+router.get("/logout",isAuthenticated,profileController.logout);
 
 export default router;

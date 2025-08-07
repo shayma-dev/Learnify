@@ -13,7 +13,6 @@ router.get("/login-failure", (req, res) => {
   res.status(401).json({ error: "Invalid email or password" });
 });
 
-router.get("/logout", authController.logout);
 
 // Google OAuth
 /*router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));

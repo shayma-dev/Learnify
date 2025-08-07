@@ -59,9 +59,4 @@ export const loginSuccess = (req, res) => {
   res.status(200).json({ message: "Login successful", user: req.user });
 };
 
-export const logout = (req, res) => {
-  req.logout((err) => {
-    if (err) return res.status(500).json({ error: "Logout error" });
-    res.status(200).json({ message: "Logged out" });
-  });
-};
+
