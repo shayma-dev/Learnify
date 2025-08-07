@@ -11,7 +11,8 @@ import {
   Tabs,
   Divider,
   Stack,
-  Box
+  Box,
+  Grid,
 } from '@mantine/core';
 import { modals} from '@mantine/modals';
 import { DateInput } from '@mantine/dates';
@@ -25,6 +26,9 @@ import './Tasks.css';
 
 export default function Tasks() {
   const [activeTab, setActiveTab] = useState('all');
+  const subjects = ['World History', 'Physics', 'Biology', 'Chemistry', 'Mathematics'];
+  const [selectedSubject, setSelectedSubject] = useState(subjects[0]);
+  
   // Sample task data
   // In a real application, this would be fetched from an API or database
   // For simplicity, we use hardcoded data here
@@ -51,22 +55,33 @@ export default function Tasks() {
       completed: true
     }
   ]);
-  // Extend dayjs with isBetween plugin for date filtering
-  // This allows us to filter tasks based on their due dates
+  
   dayjs.extend(isBetween);
-  const filteredTasks = tasks.filter(task => {
-    if (activeTab === 'completed') return task.completed;
-    if (activeTab === 'today') return dayjs(task.date, 'DD-MM-YYYY').isSame(dayjs(), 'day');
-    if (activeTab === 'week') {
-      const taskDate = dayjs(task.date, 'DD-MM-YYYY');
-      const startOfWeek = dayjs().startOf('week');
-      const endOfWeek = dayjs().endOf('week');
-      return taskDate.isBetween(startOfWeek, endOfWeek, 'day', '[]');
-        }
-      return true; 
-    })
-      const pendingTasks = filteredTasks.filter(task => !task.completed);
-      const completedTasks = filteredTasks.filter(task => task.completed);
+ 
+  // This allows us to filter tasks based on their due dates
+const filteredTasks = tasks.filter(task => {
+  const taskDate = dayjs(task.date, 'DD-MM-YYYY');
+  if (activeTab === 'completed') return task.completed;
+  if (activeTab === 'today') return taskDate.isSame(dayjs().startOf('day'), 'day'); // مقارنة اليوم فقط
+  if (activeTab === 'week') {
+    const startOfWeek = dayjs().startOf('week');
+    const endOfWeek = dayjs().endOf('week');
+    return taskDate.isBetween(startOfWeek, endOfWeek, 'day', '[]'); // من بداية الأسبوع حتى نهايته
+  }
+  if (activeTab === 'subject') {
+    return task.subject === selectedSubject;
+  }
+  return true;
+});
+
+
+    const handleSubjectChange = (e) => {
+      setSelectedSubject(e.target.value);
+    };
+        
+        
+    const pendingTasks = filteredTasks.filter(task => !task.completed);
+    const completedTasks = filteredTasks.filter(task => task.completed);
 
       const toggleTaskCompletion = (id) => {
         setTasks(tasks.map(task => 
@@ -191,6 +206,8 @@ export default function Tasks() {
                   completed: false
                 }]);
                 modals.closeAll();
+                notifications.show({ title: 'Success', message: 'Task added successfully', color: 'green' });
+
               }}
             >
               Add Task
@@ -206,17 +223,46 @@ export default function Tasks() {
 
   return (
     <div className="tasks-container">
-      <Tabs value={activeTab} onChange={setActiveTab}>
-        <Tabs.List grow>
-          <Tabs.Tab value="all">All</Tabs.Tab>
-          <Tabs.Tab value="today">Today</Tabs.Tab>
-          <Tabs.Tab value="week">This Week</Tabs.Tab>
-          <Tabs.Tab value="subject">Subject</Tabs.Tab>
-        </Tabs.List>
-      </Tabs>
+      <h1 style={{ color: '#72a1fd' }}>Task Management</h1>
+      <Grid>
+      <Grid.Col span={3}>
+        <Tabs
+          value={activeTab}
+          onChange={setActiveTab}
+          className="custom-tabs"
+        >
+          <Tabs.List grow>
+            <Tabs.Tab value="all">All</Tabs.Tab>
+            <Tabs.Tab value="today">Today</Tabs.Tab>
+            <Tabs.Tab value="week">This Week</Tabs.Tab>
+            <Tabs.Tab value="subject">Subject</Tabs.Tab>
+          </Tabs.List>
+        </Tabs>
 
-      <Divider my="md" />
+      {activeTab === 'subject' && (
+        <NativeSelect  
+          label="Select Subject"
+          data={subjects}
+          value={selectedSubject}
+          onChange={handleSubjectChange}
+          className="subject-select"
+        />
+      )}
 
+      </Grid.Col>
+      <Grid.Col span={3}></Grid.Col>
+      <Grid.Col span={3} offset={3}>
+      <Button 
+        mt="md" 
+        variant="light" 
+        onClick={openAddTaskModal}
+      >
+        Add Task
+      </Button>
+      </Grid.Col>
+    </Grid>
+
+      {/* <Divider my="md" /> */}
       <Box mb="xl">
         <Text size="lg" fw={600} mb="sm">Task List</Text>
         <Stack gap="xs">
@@ -259,7 +305,7 @@ export default function Tasks() {
 
       {completedTasks.length > 0 && (
         <Box>
-          <Text size="lg" fw={600} mb="sm">Completed</Text>
+          <Text size="lg" fw={600} mb="sm">&#9989; Completed</Text>
           <Stack gap="xs">
             {completedTasks.map(task => (
               <Paper key={task.id} p="sm" withBorder bg="var(--mantine-color-gray-0)">
@@ -284,14 +330,7 @@ export default function Tasks() {
         </Box>
       )}
 
-      <Button 
-        fullWidth 
-        mt="md" 
-        variant="light" 
-        onClick={openAddTaskModal}
-      >
-        Add Task
-      </Button>
+      
     </div>
   );
 }

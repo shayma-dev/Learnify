@@ -4,7 +4,7 @@ import logo from '../assets/Logo.png'
 import { useState } from 'react';
 import {Group } from '@mantine/core';
 import {IconLogout} from '@tabler/icons-react';
-import './Services.css';
+import './Sidebar.css';
 import '@mantine/core/styles.css';
 const data = [
   { link: '', label: 'Dashboard', icon: FaTachometerAlt },
