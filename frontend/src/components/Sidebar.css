@@ -1,0 +1,72 @@
+/* .navbar: تحديد الحاوية الرئيسية للـ Sidebar */
+.navbar {
+  height: 700px;
+  width: 220px;
+  padding: 16px; /* استخدم المسافات الافتراضية في Mantine */
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--mantine-color-gray-3); /* استبدل بـ متغيرات Mantine */
+}
+
+/* .navbarMain: الجزء الرئيسي من الـ Sidebar */
+.navbarMain {
+  flex: 1;
+  margin-right: 20px;
+  margin-bottom: 10px;
+}
+
+/* .header: رأس الـ Sidebar */
+.header {
+  display: flex;
+  justify-content: space-between; /* لضمان توزيع العناصر */
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--mantine-color-gray-3); /* استبدل بـ متغيرات Mantine */
+}
+
+.header img {
+  width: 170px;
+  height: 70px;
+}
+
+/* .footer: الجزء السفلي للـ Sidebar */
+.footer {
+  padding-top: 16px;
+  margin-top: 24px;
+  border-top: 1px solid var(--mantine-color-gray-3); /* استبدل بـ متغيرات Mantine */
+}
+
+/* .link: تنسيق الروابط في Sidebar */
+.link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  font-size: 14px; /* استخدم الخط الافتراضي في Mantine */
+  color: var(--mantine-color-gray-7); /* استبدل بـ متغيرات Mantine */
+  padding: 8px 16px;
+  border-radius: 8px; /* استخدم القيم الافتراضية لـ Mantine */
+  font-weight: 500;
+  transition: background-color 0.3s ease, color 0.3s ease; /* تحسين التفاعل مع التحويم */
+
+  &:hover {
+    background-color: var(--mantine-color-gray-0); /* استبدل بـ متغيرات Mantine */
+    color: var(--mantine-color-black);
+  }
+
+  &[data-active] {
+    background-color: var(--mantine-color-blue-light);
+    color: var(--mantine-color-blue-light-color);
+
+    .linkIcon {
+      color: var(--mantine-color-blue-light-color);
+    }
+  }
+}
+
+/* .linkIcon: تنسيق الأيقونات في الروابط */
+.linkIcon {
+  color: var(--mantine-color-gray-6); /* استبدل بـ متغيرات Mantine */
+  margin-right: 12px; /* توفير مسافة بين الأيقونة والنص */
+  width: 25px;
+  height: 25px;
+}

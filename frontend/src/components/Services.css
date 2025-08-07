@@ -1,0 +1,94 @@
+.services {
+  padding: 20px;
+  text-align: center;
+}
+
+.services h1 {
+  opacity: 0;
+  animation-duration: 1s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+  animation-name: fadeInUp;
+  color: #0a1653;
+  font-size: 60px;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 80px;
+}
+
+/* .subtext {
+  animation-name: fadeInUp;
+  animation-delay: 0.5s;
+  color: #99a0aec3;
+  font-size: 25px;
+  text-align: center;
+  margin-top: -5px;
+  padding-bottom: 25px;
+} */
+
+.service-card {
+  width: 320px !important;
+  height: 250px;
+  background-color: #ebedf3fd !important;
+  border-radius: 15px; 
+  margin: 30px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  height: 400px;
+  .card-text {
+      visibility: visible; 
+  }
+}
+.service-card img {
+  width: 200px;
+  height: 170px;
+  justify-self: center;
+}
+
+.card-title {
+  font-size: 1.5rem !important;
+  font-weight: bold !important;
+  color: #007bff !important;
+  padding: 20px !important;
+  margin-bottom: 10px !important;
+}
+
+.card-text {
+  padding: 0 20px !important;
+  visibility: hidden;
+  font-size: 15px !important;
+  font-weight:450 !important;
+  color: #888585;
+  line-height: 1.6;
+}
+
+.service-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.row {
+  margin-bottom: 20px;
+}
+
+.col {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

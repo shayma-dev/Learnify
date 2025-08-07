@@ -1,0 +1,32 @@
+.logoImage {
+  width: 150px;      
+  height: auto;    
+  margin-left: 240px;
+  transition: all 0.3s ease; 
+  padding: 5px;        
+
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+}
+.login{
+  color:#eff1f7 !important;
+  width: 100px !important;      
+  height: 40px !important;    
+  margin-top: 10px !important;
+  transition: all 0.3s ease !important; 
+  padding: 5px !important;
+  font-size: 17px !important;
+  font-weight: 600 !important;
+  border: none !important;
+  background-color: #688bd0 !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+  &:hover {
+    color: #2e5ce8 !important;
+    background-color: #eff1f7 !important;
+    transform: scale(1.05) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+  }   
+}
