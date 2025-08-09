@@ -2,6 +2,8 @@ import {query} from "../models/db.js";
 
 // GET /api/tasks
 export const getTasks = async (req, res) => {
+  const userId = req.user.id;
+
   try {
     const tasksResult = await query(
       `SELECT tasks.*, subjects.name AS subject_name
@@ -9,12 +11,12 @@ export const getTasks = async (req, res) => {
        JOIN subjects ON tasks.subject_id = subjects.id
        WHERE tasks.user_id = $1 
        ORDER BY due_date ASC`,
-      [req.user.id]
+      [userId]
     );
 
     const subjectsResult = await query(
       `SELECT * FROM subjects WHERE user_id = $1 ORDER BY name ASC`,
-      [req.user.id]
+      [userId]
     );
 
     res.json({
