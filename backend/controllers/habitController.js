@@ -8,6 +8,7 @@ export const getHabits = async (req, res) => {
       UPDATE habits
       SET current_streak = 0
       WHERE user_id = $1
+      AND current_streak < goal
         AND (
           last_completed IS NULL 
           OR last_completed::date NOT IN (CURRENT_DATE, CURRENT_DATE - INTERVAL '1 day'))`, [userId]);
@@ -43,12 +44,15 @@ export const createHabit = async (req, res) => {
 export const updateHabit = async (req, res) => {
   const { name, description, goal } = req.body;
   try {
-    await query(
+    const { rows }= await query(
       `UPDATE habits
        SET name = $1, description = $2, goal= $3
        WHERE id = $4 AND user_id = $5`,
       [name, description, goal,req.params.id, req.user.id]
     );
+    if (rows.length === 0) {
+        return res.status(404).json({ error: "Habit not found" });
+      }
     res.status(200).json({ message: "habit updated successfully" });
   } catch (err) {
     console.error(err);
@@ -59,72 +63,60 @@ export const updateHabit = async (req, res) => {
 export const markHabitDone = async (req, res) => {
   const habitId = req.params.id;
   const userId = req.user.id;
-
   try {
+
+        const { rows: beforeRows } = await query(
+      `SELECT current_streak, goal, last_completed FROM habits WHERE id = $1 AND user_id = $2`,
+      [habitId, userId]
+    );
+    if (beforeRows.length === 0) {
+      return res.status(404).json({ error: "Habit not found" });
+    }
+    const beforeStreak = beforeRows[0].current_streak;
+    const goal = beforeRows[0].goal;
+
+     if (beforeStreak >= goal) {
+        return res.status(200).json({
+          message: "You already reached your goal!"
+        });
+      }
+
     const { rows } = await query(
-      `SELECT current_streak, last_completed, goal,
-      (last_completed::date = CURRENT_DATE) AS done_today
-       FROM habits
-       WHERE id = $1 AND user_id = $2`,
+      `UPDATE habits
+       SET
+         current_streak = CASE
+           WHEN last_completed::date = CURRENT_DATE - INTERVAL '1 day'
+             THEN LEAST(current_streak + 1, goal)
+           ELSE 1
+         END,
+         last_completed = CURRENT_TIMESTAMP
+       WHERE id = $1
+         AND user_id = $2
+         AND (last_completed IS NULL OR last_completed::date <> CURRENT_DATE)
+       RETURNING current_streak, last_completed, goal`,
       [habitId, userId]
     );
 
     if (rows.length === 0) {
-      return res.status(404).json({ error: "Habit not found" });
-    }
-
-    const habit = rows[0];
-
-    const formatDate = (date) =>
-    date.toISOString().split("T")[0];
-
-    const todayStr = formatDate(new Date());
-    const lastDoneDate = habit.last_completed
-      ? formatDate(new Date(habit.last_completed))
-      : null;
-    if (habit.done_today) {
-      return res.status(200).json({ message: "Already marked as done today" });
-    }
-
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const isYesterday = lastDoneDate === formatDate(yesterday);
-
-    let newStreak = isYesterday
-      ? habit.current_streak + 1
-      : 1;
-
-    if (newStreak > habit.goal) {
-      newStreak = habit.goal;
-    }
-
-    const result = await query(
-      `UPDATE habits
-       SET current_streak = $1, last_completed = $2
-       WHERE id = $3 
-         AND user_id = $4
-         RETURNING current_streak, last_completed, goal`,
-      [newStreak, todayStr, habitId, userId]
-    );
-
-     if (habit.current_streak >= habit.goal) {
       return res.status(200).json({
-        message: "You have already completed your goal!"
+        message: "Already marked as done today"
       });
     }
+    const updated = rows[0];
 
-    if (newStreak === habit.goal) {
+    if (beforeStreak < goal && updated.current_streak === updated.goal) {
       return res.status(200).json({
         message: "🎉 Congratulations! You have completed your goal!",
-        current_streak: newStreak,
-        last_completed: todayStr
-      });
+        current_streak: updated.current_streak,
+        last_completed: updated.last_completed,
+        goal: updated.goal });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "Streak updated",
-      current_streak: newStreak,
-      last_completed: todayStr
+      current_streak: updated.current_streak,
+      last_completed: updated.last_completed,
+      goal: updated.goal
     });
 
   } catch (err) {

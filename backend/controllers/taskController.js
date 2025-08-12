@@ -143,7 +143,7 @@ export const deleteTask = async (req, res) => {
       `DELETE FROM tasks WHERE id = $1 AND user_id = $2 RETURNING *`,
       [req.params.id, req.user.id]
     );
-    res.json({ message: "Task updated successfully" });
+    res.json({ message: "Task deleted successfully" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Error deleting task" });
