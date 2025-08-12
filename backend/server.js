@@ -6,11 +6,11 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import authRoutes from "./routes/auth.js";
-//import taskRoutes from "./routes/tasks.js";
-//import plannerRoutes from "./routes/planner.js";
+import taskRoutes from "./routes/tasks.js";
+import plannerRoutes from "./routes/planner.js";
 //import sessionRoutes from "./routes/sessions.js";
 //import noteRoutes from "./routes/notes.js";
-//import habitRoutes from "./routes/habits.js";
+import habitRoutes from "./routes/habits.js";
 import profileRoutes from "./routes/profile.js";
 
 import configurePassport from "./config/passport.js";
@@ -67,11 +67,11 @@ app.use((req, res, next) => {
 
 // Routes
 app.use("/api/auth", authRoutes);
-//app.use("/api/tasks", taskRoutes);
-//app.use("/api/planner", plannerRoutes);
+app.use("/api/tasks", taskRoutes);
+app.use("/api/planner", plannerRoutes);
 //app.use("/api/sessions", sessionRoutes);
 //app.use("/api/notes", noteRoutes);
-//app.use("/api/habits", habitRoutes);
+app.use("/api/habits", habitRoutes);
 app.use("/api/profile", profileRoutes);
 
 
