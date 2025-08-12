@@ -64,6 +64,9 @@ export const loginSuccess = (req, res) => {
 export const logout = (req, res) => {
   req.logout((err) => {
     if (err) return res.status(500).json({ error: "Logout error" });
-    res.status(200).json({ message: "Logged out" });
+    req.session.destroy(() => {
+      res.clearCookie("sid", { path: "/" });
+      res.status(204).end();
+    });
   });
 };
