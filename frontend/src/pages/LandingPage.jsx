@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import LandingPageUI from "../components/landing-page/LandingPageUI";
+import AppNav from "../components/common/AppNav";
 
 export default function LandingPage() {
-  const { login, signup} = useAuth();
+  const { login, signup } = useAuth();
   const navigate = useNavigate();
 
   const [signupEmail, setSignupEmail] = useState("");
@@ -44,21 +45,23 @@ export default function LandingPage() {
   };
 
   return (
-    <LandingPageUI
-      signupEmail={signupEmail}
-      signupPassword={signupPassword}
-      signupUsername={signupUsername}
-      loginEmail={loginEmail}
-      loginPassword={loginPassword}
-      onChangeSignupEmail={setSignupEmail}
-      onChangeSignupPassword={setSignupPassword}
-      onChangeSignupUsername={setSignupUsername}
-      onChangeLoginEmail={setLoginEmail}
-      onChangeLoginPassword={setLoginPassword}
-      onSignup={handleSignup}
-      onLogin={handleLogin}
-      loading={loading}
-      error={error}
-    />
+    <>
+      <LandingPageUI
+        signupEmail={signupEmail}
+        signupPassword={signupPassword}
+        signupUsername={signupUsername}
+        loginEmail={loginEmail}
+        loginPassword={loginPassword}
+        onChangeSignupEmail={setSignupEmail}
+        onChangeSignupPassword={setSignupPassword}
+        onChangeSignupUsername={setSignupUsername}
+        onChangeLoginEmail={setLoginEmail}
+        onChangeLoginPassword={setLoginPassword}
+        onSignup={handleSignup}
+        onLogin={handleLogin}
+        loading={loading}
+        error={error}
+      />
+    </>
   );
 }
