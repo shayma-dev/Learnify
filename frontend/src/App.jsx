@@ -5,6 +5,7 @@ import LandingPage from "./pages/LandingPage";
 import Profile from "./pages/Profile";
 import TasksPage from "./pages/TasksPage";
 import NotFound from "./pages/NotFound";
+import StudyPlannerPage from "./pages/StudyPlannerPage";
 import ProtectedRoute from "./utils/ProtectedRoute";
 
 const App = () => {
@@ -20,6 +21,7 @@ const App = () => {
             <Route element={<ProtectedRoute />}>
               <Route path="/profile" element={<Profile />} />
               <Route path="/tasks" element={<TasksPage />} />
+              <Route path="/study" element={<StudyPlannerPage />} />
               {/* other authed routes */}
             </Route>
 

@@ -42,11 +42,18 @@ onToggleClick(id: number|string): void
 import React, { useMemo } from "react";
 
 function DueBadge({ dueDate, isCompleted }) {
+  if (isCompleted) {
+    return <div style={{ fontSize: 12, color: "#10b981" }}>Completed</div>;
+  }
+
   const due = new Date(dueDate);
   const start = new Date();
   start.setHours(0, 0, 0, 0);
   const oneDay = 1000 * 60 * 60 * 24;
-  const diffDays = Math.round((new Date(due.getFullYear(), due.getMonth(), due.getDate()) - start) / oneDay);
+  const diffDays = Math.round(
+    (new Date(due.getFullYear(), due.getMonth(), due.getDate()) - start) /
+      oneDay
+  );
 
   let text = "";
   let color = "#6b7280";
@@ -93,7 +100,13 @@ export default function TasksPageUI({
 
   return (
     <div style={{ padding: 24, maxWidth: 980, margin: "0 auto" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
         <h1 style={{ margin: 0 }}>Tasks</h1>
         <button
           onClick={onAddClick}
@@ -111,7 +124,9 @@ export default function TasksPageUI({
       </div>
 
       {/* Filters */}
-      <div style={{ display: "flex", gap: 8, marginTop: 12, alignItems: "center" }}>
+      <div
+        style={{ display: "flex", gap: 8, marginTop: 12, alignItems: "center" }}
+      >
         {[
           { key: "all", label: "All" },
           { key: "today", label: "Today" },
@@ -138,10 +153,16 @@ export default function TasksPageUI({
 
         {/* Subject filter */}
         <div style={{ marginLeft: 8 }}>
-          <label style={{ fontSize: 12, color: "#6b7280", marginRight: 6 }}>Subject</label>
+          <label style={{ fontSize: 12, color: "#6b7280", marginRight: 6 }}>
+            Subject
+          </label>
           <select
             value={filters.subjectId || ""}
-            onChange={(e) => onFilterChange.onSubjectChange(e.target.value ? Number(e.target.value) : null)}
+            onChange={(e) =>
+              onFilterChange.onSubjectChange(
+                e.target.value ? Number(e.target.value) : null
+              )
+            }
             style={{
               padding: "6px 10px",
               borderRadius: 16,
@@ -161,7 +182,11 @@ export default function TasksPageUI({
 
       {/* Error */}
       {error ? (
-        <div role="status" aria-live="polite" style={{ color: "crimson", marginTop: 12 }}>
+        <div
+          role="status"
+          aria-live="polite"
+          style={{ color: "crimson", marginTop: 12 }}
+        >
           {error}
         </div>
       ) : null}
@@ -171,7 +196,14 @@ export default function TasksPageUI({
 
       {/* Empty state */}
       {!loading && tasks.length === 0 ? (
-        <div style={{ marginTop: 24, background: "#f3f4f6", borderRadius: 8, padding: 16 }}>
+        <div
+          style={{
+            marginTop: 24,
+            background: "#f3f4f6",
+            borderRadius: 8,
+            padding: 16,
+          }}
+        >
           <div style={{ color: "#6b7280" }}>No tasks found.</div>
           <div style={{ marginTop: 8 }}>
             <button
@@ -198,7 +230,8 @@ export default function TasksPageUI({
           <div style={{ display: "grid", gap: 4 }}>
             {tasks.map((t) => {
               const isCompleted = !!t.is_completed;
-              const subjectName = t.subject_name || subjectMap.get(Number(t.subject_id)) || "—";
+              const subjectName =
+                t.subject_name || subjectMap.get(Number(t.subject_id)) || "—";
               return (
                 <div
                   key={t.id}
@@ -213,12 +246,20 @@ export default function TasksPageUI({
                   }}
                 >
                   {/* Checkbox */}
-                  <div style={{ display: "flex", justifyContent: "center", paddingTop: 4 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      paddingTop: 4,
+                    }}
+                  >
                     <input
                       type="checkbox"
                       checked={isCompleted}
                       onChange={() => onToggleClick(t.id)}
-                      aria-label={`Mark "${t.title}" as ${isCompleted ? "incomplete" : "complete"}`}
+                      aria-label={`Mark "${t.title}" as ${
+                        isCompleted ? "incomplete" : "complete"
+                      }`}
                       style={{ cursor: "pointer" }}
                     />
                   </div>
@@ -247,9 +288,16 @@ export default function TasksPageUI({
                       </div>
                     ) : null}
                     <div style={{ marginTop: 4 }}>
-                      <DueBadge dueDate={t.due_date} isCompleted={isCompleted} />
+                      <DueBadge
+                        dueDate={t.due_date}
+                        isCompleted={isCompleted}
+                      />
                     </div>
-                    <div style={{ color: "#6b7280", fontSize: 12, marginTop: 2 }}>{subjectName}</div>
+                    <div
+                      style={{ color: "#6b7280", fontSize: 12, marginTop: 2 }}
+                    >
+                      {subjectName}
+                    </div>
                   </div>
 
                   {/* Actions */}
