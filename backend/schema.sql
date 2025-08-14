@@ -107,7 +107,6 @@ CREATE TABLE public.sessions (
     user_id integer,
     subject_id integer,
     duration_minutes integer NOT NULL,
-    break_minutes integer,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 

@@ -14,9 +14,13 @@ export const getHabits = async (req, res) => {
           OR last_completed::date NOT IN (CURRENT_DATE, CURRENT_DATE - INTERVAL '1 day'))`, [userId]);
 
     const result = await query(
-      "SELECT * FROM habits WHERE user_id = $1 ORDER BY id ASC",
-      [userId]
-    );
+  `SELECT id, user_id, name, description, goal, current_streak,
+   to_char(last_completed, 'YYYY-MM-DD') AS last_completed
+   FROM habits
+   WHERE user_id = $1
+   ORDER BY id ASC`,
+  [userId]
+);
 
     res.json(result.rows);
 
@@ -29,12 +33,12 @@ export const getHabits = async (req, res) => {
 export const createHabit = async (req, res) => {
   const { name, description, goal } = req.body;
   try {
-    await query(
+    const result = await query(
       `INSERT INTO habits (user_id, name, description, goal, current_streak, last_completed)
-       VALUES ($1, $2, $3, $4, 0, null)`,
+       VALUES ($1, $2, $3, $4, 0, null) RETURNING *`,
       [req.user.id, name, description, goal]
     );
-    res.status(201).json({ message: "Habit created" });
+    res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error("Error saving habit:", err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -47,13 +51,13 @@ export const updateHabit = async (req, res) => {
     const { rows }= await query(
       `UPDATE habits
        SET name = $1, description = $2, goal= $3
-       WHERE id = $4 AND user_id = $5`,
+       WHERE id = $4 AND user_id = $5 RETURNING *`,
       [name, description, goal,req.params.id, req.user.id]
     );
     if (rows.length === 0) {
         return res.status(404).json({ error: "Habit not found" });
       }
-    res.status(200).json({ message: "habit updated successfully" });
+    res.status(200).json(rows[0]);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to update habit" });
