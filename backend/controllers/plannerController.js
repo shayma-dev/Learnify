@@ -101,7 +101,7 @@ export const updateSession = async (req, res) => {
       [day, req.params.id, req.user.id, start_time, end_time]
     );
     if (overlap.rows.length > 0){
-      return res.status(400).json({ error: "Time conflict" });
+      return res.status(400).json({ error: "Time conflict with existing session" });
     }
     const updated = await query(
       `UPDATE sessions_planner SET day =$1 ,subject_id = $2, start_time = $3, end_time = $4 

@@ -5,6 +5,7 @@ import App from './App'; // Import App
 
 // Import Mantine styles
 import '@mantine/core/styles.css'; 
+import 'highlight.js/styles/github.css';
 import { createTheme, MantineProvider } from '@mantine/core';
 
 // Create a theme for Mantine components (customize as needed)
