@@ -22,6 +22,21 @@ export const getNotes = async (req, res) => {
 
 export const createNote = async (req, res) => {
   const { title, content, subject_id } = req.body;
+  if (!title || !content || !subject_id) {
+    return res
+      .status(400)
+      .json({ error: "title, content and subject_id are required" });
+  }
+  if (title.length < 3 || title.length > 120) {
+    return res
+      .status(400)
+      .json({ error: "title must be between 3 and 120 characters" });
+  }
+  if (content.length > 12000) {
+    return res
+      .status(400)
+      .json({ error: "content is too long (max 12000 characters)" });
+  }
    const subjectCheck = await query(
       "SELECT id FROM subjects WHERE id = $1 AND user_id = $2",
       [subject_id, req.user.id]
@@ -30,11 +45,11 @@ export const createNote = async (req, res) => {
       return res.status(400).json({ error: "subject not found" });
     }
   try {
-    await query(
-      'INSERT INTO notes (title, content, subject_id, user_id) VALUES ($1, $2, $3, $4)',
+    const result = await query(
+      'INSERT INTO notes (title, content, subject_id, user_id) VALUES ($1, $2, $3, $4)RETURNING *',
       [title, content, subject_id, req.user.id]
     );
-    res.status(201).json({ message: "Note created" });
+    res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Error creating note" });
@@ -43,6 +58,21 @@ export const createNote = async (req, res) => {
 
 export const updateNote = async (req, res) => {
   const { title, content, subject_id } = req.body;
+  if (!title || !content || !subject_id) {
+    return res
+      .status(400)
+      .json({ error: "title, content and subject_id are required" });
+  }
+  if (title.length < 3 || title.length > 120) {
+    return res
+      .status(400)
+      .json({ error: "title must be between 3 and 120 characters" });
+  }
+  if (content.length > 12000) {
+    return res
+      .status(400)
+      .json({ error: "content is too long (max 12000 characters)" });
+  }
    const subjectCheck = await query(
       "SELECT id FROM subjects WHERE id = $1 AND user_id = $2",
       [subject_id, req.user.id]
@@ -60,12 +90,12 @@ export const updateNote = async (req, res) => {
     }
 
   try {
-    await query(
+    const result = await query(
       `UPDATE notes SET title = $1, content = $2, subject_id = $3 
-       WHERE id = $4 AND user_id = $5`,
+       WHERE id = $4 AND user_id = $5 RETURNING *`,
       [title, content, subject_id, req.params.id, req.user.id]
     );
-    res.status(200).json({ message: "Note updated" });
+    res.status(200).json(result.rows[0]);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Error updating note" });

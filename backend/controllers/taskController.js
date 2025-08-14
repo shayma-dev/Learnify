@@ -116,13 +116,13 @@ export const updateTask = async (req, res) => {
     }
 
   try {
-    await query(
+    const result =  await query(
       `UPDATE tasks 
        SET title = $1, description = $2, due_date = $3, subject_id = $4
-       WHERE id = $5 AND user_id = $6`,
+       WHERE id = $5 AND user_id = $6 RETURNING *`,
       [title, description, due_date, subject_id, req.params.id, req.user.id]
     );
-    res.status(200).json({ message: "Task updated successfully" });
+    res.status(200).json(result.rows[0]);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to update task" });
