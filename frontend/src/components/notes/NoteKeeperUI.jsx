@@ -95,7 +95,7 @@ function subjectColor(subjectId) {
   return colors[index];
 }
 
-function EmptyState({ title, description }) {16
+function EmptyState({ title, description }) {
   return (
     <div
       style={{

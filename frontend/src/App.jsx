@@ -7,6 +7,7 @@ import TasksPage from "./pages/TasksPage";
 import NotFound from "./pages/NotFound";
 import StudyPlannerPage from "./pages/StudyPlannerPage";
 import NoteKeeperPage from "./pages/NoteKeeperPage";  
+import HabitsPage from "./pages/HabitsPage";
 import ProtectedRoute from "./utils/ProtectedRoute";
 
 const App = () => {
@@ -24,6 +25,7 @@ const App = () => {
               <Route path="/tasks" element={<TasksPage />} />
               <Route path="/study" element={<StudyPlannerPage />} />
               <Route path="/notekeeper" element={<NoteKeeperPage />} />
+              <Route path="/habits" element={<HabitsPage />} />
               {/* other authed routes */}
             </Route>
 
