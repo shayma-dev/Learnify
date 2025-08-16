@@ -6,6 +6,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import AppNav from "../components/common/AppNav";
 import StudyPlannerUI from "../components/planner/StudyPlannerUI";
 import SessionFormUI from "../components/planner/SessionFormUI";
+import FocusAlarmWatcher from "../components/focus/FocusAlarmWatcher.jsx";
 import {
   getPlanner as apiGetPlanner,
   createSession as apiCreateSession,
@@ -224,7 +225,9 @@ export default function StudyPlannerPage() {
   return (
     <>
       <AppNav />
+      <FocusAlarmWatcher />
 
+      {/* Main UI component */}
       <StudyPlannerUI
         loading={loading}
         error={error}

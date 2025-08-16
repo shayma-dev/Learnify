@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import AppNav from "../components/common/AppNav";
+import FocusAlarmWatcher from "../components/focus/FocusAlarmWatcher.jsx";
 
 export default function NotFound() {
   const { status, user } = useAuth();
@@ -15,6 +16,9 @@ export default function NotFound() {
   return (
     <>
       {isAuthed && <AppNav />}
+      <FocusAlarmWatcher />
+
+      {/* Main content */}
       <main
         style={{
           minHeight: "60vh",

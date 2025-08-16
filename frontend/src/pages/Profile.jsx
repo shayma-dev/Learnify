@@ -6,6 +6,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import ProfileUI from "../components/profile/ProfileUI";
 import AppNav from "../components/common/AppNav";
+import FocusAlarmWatcher from "../components/focus/FocusAlarmWatcher.jsx";
 import {
   getProfile,
   updateUsername,
@@ -149,6 +150,8 @@ export default function ProfilePage() {
     <>
       {/* Top navigation shared across pages */}
       <AppNav/>
+      {/* Focus alarm watcher for this page */}
+      <FocusAlarmWatcher />
 
       {/* Presentational component receives all data + handlers */}
       <ProfileUI

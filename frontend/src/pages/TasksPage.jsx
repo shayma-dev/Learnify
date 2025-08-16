@@ -6,6 +6,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import AppNav from "../components/common/AppNav";
 import TasksPageUI from "../components/tasks/TasksPageUI";
 import TaskFormUI from "../components/tasks/TaskFormUI";
+import FocusAlarmWatcher from "../components/focus/FocusAlarmWatcher.jsx";
 import {
   getTasks as apiGetTasks,
   createTask as apiCreateTask,
@@ -239,7 +240,9 @@ export default function TasksPage() {
   return (
     <>
       <AppNav />
+      <FocusAlarmWatcher />
 
+      {/* Main UI component */}
       <TasksPageUI
         loading={loading}
         error={error}

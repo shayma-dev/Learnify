@@ -4,6 +4,7 @@
 // ==============================
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import AppNav from "../components/common/AppNav";
+import FocusAlarmWatcher from "../components/focus/FocusAlarmWatcher.jsx";
 import HabitsUI from "../components/habits/HabitsUI";
 import HabitFormUI from "../components/habits/HabitFormUI";
 import {
@@ -179,6 +180,9 @@ export default function HabitsPage() {
   return (
     <>
       <AppNav />
+      <FocusAlarmWatcher />
+
+      {/* Render the main UI */}
       <HabitsUI
         loading={loading}
         error={error}

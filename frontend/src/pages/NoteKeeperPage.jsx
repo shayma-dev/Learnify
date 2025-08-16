@@ -4,6 +4,7 @@
 // ==============================
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import AppNav from "../components/common/AppNav";
+import FocusAlarmWatcher from "../components/focus/FocusAlarmWatcher.jsx";
 import NoteKeeperUI from "../components/notes/NoteKeeperUI";
 import NoteFormUI from "../components/notes/NoteFormUI";
 import NoteViewModal from "../components/notes/NoteViewModal";
@@ -214,7 +215,7 @@ export default function NoteKeeperPage() {
   return (
     <>
       <AppNav />
-
+      <FocusAlarmWatcher />
       <NoteKeeperUI
         loading={loading}
         error={error}

@@ -1,8 +1,15 @@
 /* src/pages/FocusPage.jsx */
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import FocusUI from "../components/focus/FocusUI.jsx";
 import useFocusTimer from "../hooks/useFocusTimer.js";
 import AppNav from "../components/common/AppNav";
+import FocusAlarmWatcher from "../components/focus/FocusAlarmWatcher.jsx";
 import {
   getFocusSummary,
   createFocusSession,
@@ -21,6 +28,34 @@ const STATE_KEY = "focus.state"; // ephemeral (owned by hook)
  */
 
 /** Helpers */
+
+const ALARM_KEY = "focus.alarm";
+
+function canNotify() {
+  return "Notification" in window;
+}
+
+async function ensureNotifyPermission() {
+  if (!canNotify()) return false;
+  if (Notification.permission === "granted") return true;
+  if (Notification.permission === "denied") return false;
+  try {
+    const res = await Notification.requestPermission();
+    return res === "granted";
+  } catch {
+    return false;
+  }
+}
+
+function showNotification(title, body) {
+  if (!canNotify() || Notification.permission !== "granted") return;
+  try {
+    new Notification(title, { body, tag: "focus-timer", renotify: true });
+  } catch {
+    // ignore
+  }
+}
+
 function formatMinutes(mm) {
   const m = Math.max(0, Math.floor(Number(mm) || 0));
   const h = Math.floor(m / 60);
@@ -70,7 +105,7 @@ function useAudioBeep(src = "/sounds/chime.mp3") {
         try {
           audioRef.current.pause();
         } catch {
-            console.warn("Failed to pause audio on cleanup");
+          console.warn("Failed to pause audio on cleanup");
         }
         // Clear src to allow GC in some browsers
         audioRef.current.src = "";
@@ -102,7 +137,7 @@ function useAudioBeep(src = "/sounds/chime.mp3") {
       a.currentTime = 0;
       await a.play();
     } catch (err) {
-        console.warn("Chime play failed:", err);
+      console.warn("Chime play failed:", err);
       // Likely blocked if unlock wasn't called by a gesture yet
       // Safe to ignore; next user gesture will unlock
       // console.warn("Chime play blocked:", err);
@@ -124,8 +159,8 @@ export default function FocusPage() {
   const { beep, unlock } = useAudioBeep("/sounds/chime.mp3");
 
   const toggleSound = useCallback(() => {
-    // Unlock audio on a user gesture
-    unlock();
+    unlock(); // audio unlock
+    ensureNotifyPermission(); // ask once
     setSoundEnabled((v) => !v);
   }, [unlock, setSoundEnabled]);
 
@@ -207,38 +242,66 @@ export default function FocusPage() {
     onComplete: async (mode) => {
       try {
         if (mode === "work") {
-          // Auto-save work completion
-          const minutes = timer.getElapsedWholeMinutes();
-          if (minutes >= 1 && selectedSubjectId != null) {
-            setSaving(true);
-            await createFocusSession({
-              subject_id: selectedSubjectId,
-              duration: minutes,
-            });
-            await fetchSummary();
-          }
-          // Clear ephemeral session
+          // ... existing save logic ...
           timer.reset();
-          // Switch to Break ready
           timer.switchMode("break");
-          // Chime (no chime on manual stop; this is auto-complete)
-          if (soundEnabled) beep();
+          if (soundEnabled) {
+            if (document.visibilityState === "visible") {
+              beep();
+            } else {
+              showNotification("Work session complete", "Time for a break.");
+            }
+          }
         } else if (mode === "break") {
-          // No save, just prepare for Work
+          // ... existing switch logic ...
           timer.reset();
           timer.switchMode("work");
-          if (soundEnabled) beep();
+          if (soundEnabled) {
+            if (document.visibilityState === "visible") {
+              beep();
+            } else {
+              showNotification("Break over", "Back to work!");
+            }
+          }
         }
       } catch (err) {
-        setErrorMessage(getFocusApiError(err));
-        // Reset ephemeral session anyway to avoid stuck states
-        timer.reset();
+        console.error("Error during timer completion:", err);
       } finally {
         setSaving(false);
       }
     },
   });
 
+  // Mirror running session into a simple alarm for a global watcher
+  useEffect(() => {
+    if (timer.isRunning && !timer.isPaused) {
+      const endAt = Date.now() + Math.max(0, timer.remainingSeconds) * 1000;
+      const alarm = {
+        mode: timer.mode, // "work" | "break"
+        endAt, // absolute ms timestamp
+        selectedSubjectId, // needed to save "work" session
+        plannedMinutes: timer.targetMinutes, // fallback duration to save
+      };
+      try {
+        localStorage.setItem(ALARM_KEY, JSON.stringify(alarm));
+      } catch {
+        console.warn(`Failed to set localStorage for ${ALARM_KEY}`);
+      }
+    } else {
+      try {
+        localStorage.removeItem(ALARM_KEY);
+      } catch {
+        console.warn(`Failed to clear localStorage for ${ALARM_KEY}`);
+      }
+    }
+  }, [
+    timer.isRunning,
+    timer.isPaused,
+    timer.remainingSeconds,
+    timer.mode,
+    timer.targetMinutes,
+    selectedSubjectId,
+  ]);
   // When mode changes and idle (not running + not paused), sync target to config
   useEffect(() => {
     if (!timer.isRunning && !timer.isPaused) {
@@ -316,7 +379,8 @@ export default function FocusPage() {
   const onStart = useCallback(() => {
     if (!canStart) return;
     setErrorMessage(null);
-    unlock(); // ensure audio element is "unlocked" on a user gesture
+    unlock();
+    ensureNotifyPermission();
     timer.start();
   }, [canStart, timer, unlock]);
 
@@ -325,34 +389,32 @@ export default function FocusPage() {
   }, [timer]);
 
   const onResume = useCallback(() => {
-    unlock(); // ensure audio element is "unlocked" on a user gesture
+    unlock();
+    ensureNotifyPermission();
     timer.resume();
   }, [timer, unlock]);
 
-  const onStopSave = useCallback(
-    async () => {
-      if (!canStopSave) return;
-      try {
-        setSaving(true);
-        const minutes = timer.getElapsedWholeMinutes();
-        if (minutes >= 1 && selectedSubjectId != null) {
-          await createFocusSession({
-            subject_id: selectedSubjectId,
-            duration: minutes,
-          });
-          await fetchSummary();
-        }
-        // No chime for manual stop
-        timer.reset();
-        // Stay in Work ready state
-      } catch (err) {
-        setErrorMessage(getFocusApiError(err));
-      } finally {
-        setSaving(false);
+  const onStopSave = useCallback(async () => {
+    if (!canStopSave) return;
+    try {
+      setSaving(true);
+      const minutes = timer.getElapsedWholeMinutes();
+      if (minutes >= 1 && selectedSubjectId != null) {
+        await createFocusSession({
+          subject_id: selectedSubjectId,
+          duration: minutes,
+        });
+        await fetchSummary();
       }
-    },
-    [canStopSave, selectedSubjectId, timer, fetchSummary]
-  );
+      // No chime for manual stop
+      timer.reset();
+      // Stay in Work ready state
+    } catch (err) {
+      setErrorMessage(getFocusApiError(err));
+    } finally {
+      setSaving(false);
+    }
+  }, [canStopSave, selectedSubjectId, timer, fetchSummary]);
 
   const onReset = useCallback(() => {
     // Discard partials; clear ephemeral state
@@ -389,6 +451,7 @@ export default function FocusPage() {
   return (
     <>
       <AppNav />
+      <FocusAlarmWatcher />
       <FocusUI
         // Data
         subjects={summary.subjects}

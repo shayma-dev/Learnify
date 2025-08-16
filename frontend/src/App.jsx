@@ -22,6 +22,8 @@ const App = () => {
 
             {/* Authenticated area */}
             <Route element={<ProtectedRoute />}>
+
+              {/* Wrap all authed routes in ProtectedRoute */}
               <Route path="/profile" element={<Profile />} />
               <Route path="/tasks" element={<TasksPage />} />
               <Route path="/study" element={<StudyPlannerPage />} />
